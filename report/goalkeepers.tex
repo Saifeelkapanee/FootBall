@@ -1,0 +1,430 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{colortbl}
+\usepackage{tcolorbox}
+
+% ========== إعدادات الصفحة ==========
+\geometry{margin=1in, top=1.2in, bottom=1in}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+
+% ========== ألوان مخصصة ==========
+\definecolor{primary}{RGB}{31, 78, 121}
+\definecolor{secondary}{RGB}{82, 143, 169}
+\definecolor{accent}{RGB}{220, 53, 69}
+\definecolor{success}{RGB}{40, 167, 69}
+\definecolor{warning}{RGB}{255, 193, 7}
+\definecolor{lightgray}{RGB}{248, 249, 250}
+\definecolor{darkgray}{RGB}{52, 58, 64}
+\definecolor{edersoncolor}{RGB}{200, 50, 50}
+\definecolor{alissoncolor}{RGB}{50, 100, 200}
+
+% ========== تنسيق العناوين ==========
+\titleformat{\section}
+{\color{primary}\Large\bfseries\sffamily}
+{\color{primary}\thesection}{1em}{}
+\titleformat{\subsection}
+{\color{secondary}\large\bfseries\sffamily}
+{\color{secondary}\thesubsection}{1em}{}
+
+% ========== تنسيق الهيدر والفوتر ==========
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{primary}{\textbf{Goalkeeper Performance Analysis}}}
+\fancyhead[R]{\textcolor{primary}{\today}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\color{primary}\hrule width\headwidth height\headrulewidth}
+
+% ========== تنسيق الجداول ==========
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\captionsetup[table]{font={small,bf}, labelfont={color=primary,bf}, skip=6pt}
+\captionsetup[figure]{font={small,bf}, labelfont={color=primary,bf}, skip=6pt}
+
+% ========== Box للتلخيص ==========
+\newtcolorbox{insightbox}{
+    colback=lightgray,
+    colframe=primary,
+    arc=5pt,
+    boxrule=1.5pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    title=\textbf{Key Insight}
+}
+
+\newtcolorbox{comparisonbox}{
+    colback=lightgray,
+    colframe=accent,
+    arc=5pt,
+    boxrule=1.5pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    title=\textbf{Player Comparison}
+}
+
+% ========== بداية المستند ==========
+\begin{document}
+% ========== بداية المستند ==========
+
+\begin{document}
+
+% ========== صفحة الغلاف ==========
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+
+{\Huge\bfseries\sffamily\textcolor{primary}{Football Player Performance}}\\[0.3cm]
+{\Huge\bfseries\sffamily\textcolor{secondary}{Analysis Report}}\\[1.5cm]
+
+{\large \textcolor{darkgray}{A Comprehensive Data Analysis of Goalkeepers Players}}\\[0.5cm]
+{\large \textcolor{darkgray}{Metrics \& Performance Indicators}}\\[2cm]
+
+\includegraphics[width=0.3\textwidth]{football_icon.png}\\[1.5cm] % اختياري: لو عندك ايكونة
+
+{\large \textbf{Prepared by:} Saife Elkapanee}\\[0.2cm]
+
+
+\vfill
+
+{\small \textcolor{darkgray}{Confidential - For Internal Use Only}}
+
+\end{titlepage}
+
+% ========== إعادة ضبط الترقيم ==========
+\setcounter{page}{1}
+
+% ========== الملخص ==========
+\begin{center}
+\begin{minipage}{0.9\textwidth}
+\begin{tcolorbox}[colback=lightgray, colframe=primary, arc=8pt, boxrule=1pt]
+\centering
+\textcolor{primary}{\textbf{\Large Executive Summary}}\\[0.3cm]
+This report presents a comprehensive data analysis of football player performance metrics (upto and including 2020-09-24 ), focusing on Goalkeepers players. 
+\end{tcolorbox}
+\end{minipage}
+\end{center}
+
+\vspace{0.5cm}
+
+% ========== القسم 1: Data Preprocessing \& Feature Engineering ==========
+\newpage
+\section{Data Preprocessing \& Feature Engineering - Goalkeepers}
+
+\subsection{Data Cleaning for Goalkeepers}
+
+\textbf{First: Player Filtering}
+
+Players were filtered to include only goalkeepers with at least one appearance. This ensures that the analysis is based on real goalkeepers who have actually played matches.
+
+\textbf{Second: Dropping Irrelevant Columns}
+
+All columns related to outfield player performance were removed, including:
+
+\begin{itemize}
+    \item Attacking stats: Goals, Assists, Shots, Shots on target, Shooting accuracy, Crosses, Through balls
+    \item Defensive stats: Tackles, Interceptions, Clearances, Duels, Aerial battles, Offsides
+    \item Midfield stats: Passes, Big chances created, Accurate long balls
+\end{itemize}
+
+The reason for removing these columns is that goalkeepers have completely different responsibilities from outfield players, and these metrics do not apply to their position.
+
+\textbf{Third: Feature Engineering}
+
+New features were created to measure goalkeeper performance accurately:
+
+\begin{itemize}
+    \item \textbf{Save Percentage:} Saves divided by total shots on target (Saves + Goals conceded).
+    \[
+    \text{save\_percentage} = \frac{\text{Saves}}{\text{Saves} + \text{Goals conceded}}
+    \]
+    
+    \item \textbf{Clean Sheets per Match:} Clean sheets divided by number of appearances.
+    \[
+    \text{clean\_sheets\_per\_match} = \frac{\text{Clean sheets}}{\text{Appearances}}
+    \]
+    
+    \item \textbf{Goals Conceded per Match:} Goals conceded divided by number of appearances.
+    \[
+    \text{goals\_conceded\_per\_match} = \frac{\text{Goals conceded}}{\text{Appearances}}
+    \]
+    
+    \item \textbf{Punches \& High Claims per Match:} Total aerial actions (Punches + High Claims) divided by appearances.
+    \[
+    \text{punches\_high\_claims\_per\_match} = \frac{\text{Punches} + \text{High Claims}}{\text{Appearances}}
+    \]
+    
+    \item \textbf{Aerial Actions:} Sum of High Claims and Punches.
+    \[
+    \text{aerial\_actions} = \text{High Claims} + \text{Punches}
+    \]
+\end{itemize}
+\section{Data Preprocessing \& Feature Engineering - goalkeepers}
+\subsection{Key Findings for Goalkeepers}
+
+The following top performers among goalkeepers were identified:
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\caption{\textcolor{primary}{\textbf{Top Goalkeeper Player Metrics}}}
+\label{tab:goalkeepers}
+\begin{tabular}{@{}>{\bfseries\color{primary}}p{6cm} p{8cm}@{}}
+\toprule
+\textbf{\textcolor{primary}{Metric}} & \textbf{\textcolor{primary}{Top Player(s)}} \\
+\midrule
+\rowcolor{lightgray} Most Saves & Joe Hart (941.0) \\
+Best Save Percentage & Sergio Romero (90.9\%) \\
+\rowcolor{lightgray} Most Clean Sheets & Joe Hart (127.0) \\
+Best Penalty Save Rate & Bernd Leno, Tom Heaton, Emiliano Martínez, Mat Ryan, Nick Pope, Kepa, Willy Caballero, Wayne Hennessey, Jordan Pickford, Kasper Schmeichel, Alisson, Ederson, David de Gea, Sergio Romero, Dean Henderson, Hugo Lloris, Joe Hart, Lukasz Fabianski, Rui Patrício, John Ruddy (100\%) \\
+\rowcolor{lightgray} Fewest Goals Conceded & Will Norris (0.0) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Aerial Dominance: Punches \& High Claims}
+
+Figure \ref{fig:aerial} shows the goalkeepers with the most aerial actions (punches and high claims combined).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{aerial_dominance.png}
+\caption{\textcolor{primary}{Aerial Dominance: Punches \& High Claims}}
+\label{fig:aerial}
+\end{figure}
+
+\begin{insightbox}
+\textbf{Aerial Leaders:}
+\begin{itemize}
+    \item \textbf{Joe Hart} leads all goalkeepers with 640 aerial actions, demonstrating his commanding presence in the box.
+    \item \textbf{Lukasz Fabianski} follows with 480 aerial actions, showing his willingness to come off his line.
+    \item \textbf{Hugo Lloris} (380) and \textbf{Wayne Hennessey} (280) complete the top four.
+    \item Goalkeepers with high aerial action numbers tend to play for teams that face many crosses into the box.
+\end{itemize}
+\end{insightbox}
+
+\subsection{The Busy Keeper: Saves vs Goals Conceded}
+
+Figure \ref{fig:busy} presents a scatter plot showing the relationship between saves made and goals conceded for each club's goalkeepers.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{busy_keeper.png}
+\caption{\textcolor{primary}{The Busy Keeper: Saves vs Goals Conceded by Club}}
+\label{fig:busy}
+\end{figure}
+
+\begin{insightbox}
+\textbf{Key Observations:}
+\begin{itemize}
+    \item Clubs in the top-left quadrant (high saves, low goals conceded) have elite goalkeepers who face many shots but concede few goals.
+    \item Clubs in the bottom-right quadrant (low saves, high goals conceded) indicate either poor goalkeeper performance or a defense that allows high-quality chances.
+    \item The positive correlation between saves and goals conceded is expected, as more shots faced typically lead to more goals.
+\end{itemize}
+\end{insightbox}
+
+\subsection{Clean Sheet Efficiency}
+
+Figure \ref{fig:clean_sheet} shows the top goalkeepers ranked by clean sheets per match.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{clean_sheet_efficiency.png}
+\caption{\textcolor{primary}{Clean Sheet Efficiency: Clean Sheets per Match}}
+\label{fig:clean_sheet}
+\end{figure}
+
+\begin{insightbox}
+\textbf{Clean Sheet Leaders:}
+\begin{itemize}
+    \item \textbf{Alisson} leads all goalkeepers with 0.48 clean sheets per match, meaning he keeps a clean sheet in nearly half of his appearances.
+    \item \textbf{Ederson} follows closely with 0.45 clean sheets per match.
+    \item \textbf{Loris Karius} (0.42) and \textbf{Emiliano Martínez} (0.40) complete the top four.
+    \item \textbf{Joe Hart} (0.30) and \textbf{Dean Henderson} (0.28) also feature prominently.
+\end{itemize}
+\end{insightbox}
+
+\subsection{Player Comparison: Ederson vs Alisson}
+
+Figure \ref{fig:radar_gk} presents a radar chart comparing two of the Premier League's elite goalkeepers, \textbf{Ederson} and \textbf{Alisson}, across key performance metrics.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{Ederson_vs_Alisson_Radar_Chart.png}
+\caption{\textcolor{primary}{Radar Chart: Ederson vs Alisson Performance Comparison}}
+\label{fig:radar_gk}
+\end{figure}
+
+\begin{comparisonbox}
+\textbf{Head-to-Head Analysis:}
+\begin{itemize}
+    \item \textcolor{edersoncolor}{\textbf{Ederson}} leads in \textbf{Clean sheets} (0.40 vs 0.20) and \textbf{Sweeper clearances} (0.10 vs 0.05).
+    \item \textcolor{alissoncolor}{\textbf{Alisson}} leads in \textbf{Saves} (0.40 vs 0.30).
+    \item Ederson's superior sweeper clearance numbers reflect Manchester City's high defensive line and his comfort playing as a sweeper-keeper.
+    \item Alisson makes more saves per match, suggesting he faces more shots due to Liverpool's different defensive structure.
+\end{itemize}
+\end{comparisonbox}
+
+\begin{insightbox}
+\textbf{Conclusion:} Ederson is the better \textbf{sweeper-keeper} with more clean sheets and sweeper clearances. Alisson makes more \textbf{saves per match}, indicating he is busier in goal. Both represent the gold standard for modern goalkeeping.
+\end{insightbox}
+
+\subsection{Handling Quality: Catching vs Punching}
+
+Figure \ref{fig:handling} presents a scatter plot analyzing goalkeeper handling decisions - whether they catch or punch the ball.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{handling_quality.png}
+\caption{\textcolor{primary}{Handling Quality: Catching vs Punching}}
+\label{fig:handling}
+\end{figure}
+
+\begin{insightbox}
+\textbf{Handling Analysis:}
+\begin{itemize}
+    \item Goalkeepers in the top-right quadrant catch and punch frequently, indicating active participation in aerial situations.
+    \item A higher catch-to-punch ratio generally indicates better handling security.
+    \item Punching is often preferred in crowded penalty areas when catching is risky.
+    \item Elite goalkeepers demonstrate the judgment to know when to catch versus when to punch.
+\end{itemize}
+\end{insightbox}
+
+\subsection{Resilience: Saves per Goal Conceded}
+
+Figure \ref{fig:resilience} shows the top goalkeepers ranked by how many saves they make per goal conceded.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{saves_per_goal_conceded.png}
+\caption{\textcolor{primary}{Resilience: Saves per Goal Conceded}}
+\label{fig:resilience}
+\end{figure}
+
+\begin{insightbox}
+\textbf{Resilience Leaders:}
+\begin{itemize}
+    \item \textbf{Sergio Romero} leads with approximately 9 saves per goal conceded, an extraordinary ratio.
+    \item \textbf{Fabri} and \textbf{Dean Henderson} also show excellent resilience.
+    \item \textbf{Alisson} and \textbf{David Button} feature prominently in the top ranks.
+    \item A high saves-per-goal ratio indicates a goalkeeper who faces many shots but concedes few goals - the mark of an elite shot-stopper.
+\end{itemize}
+\end{insightbox}
+
+\subsection{Modern Keepers: Most Sweeper Clearances}
+
+Figure \ref{fig:sweeper} shows the goalkeepers with the most sweeper clearances - a modern goalkeeping skill where the keeper leaves their box to clear through balls.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{sweeper_clearances.png}
+\caption{\textcolor{primary}{Modern Keepers: Most Sweeper Clearances}}
+\label{fig:sweeper}
+\end{figure}
+
+\begin{insightbox}
+\textbf{Sweeper Clearance Leaders:}
+\begin{itemize}
+    \item \textbf{Hugo Lloris} leads all goalkeepers with 257 sweeper clearances, reflecting Tottenham's high defensive line.
+    \item \textbf{Joe Hart} follows with 180 sweeper clearances.
+    \item \textbf{Kasper Schmeichel} (142) and \textbf{Lukasz Fabianski} (123) complete the top four.
+    \item \textbf{Ederson} (76), despite being known as a sweeper-keeper, ranks lower due to Manchester City's possession dominance reducing defensive actions.
+\end{itemize}
+\end{insightbox}
+
+\subsection{Top Save Percentage}
+
+Figure \ref{fig:save_percentage} shows the top 10 goalkeepers ranked by save percentage.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{top_save_percentage.png}
+\caption{\textcolor{primary}{Top 10 Goalkeepers by Save Percentage}}
+\label{fig:save_percentage}
+\end{figure}
+
+\begin{insightbox}
+\textbf{Save Percentage Leaders:}
+\begin{itemize}
+    \item \textbf{Sergio Romero} leads with 91\% save percentage, the highest among all goalkeepers.
+    \item \textbf{Dean Henderson} (75\%) and \textbf{Alisson} (74\%) follow closely.
+    \item \textbf{Vicente Guaita, Emiliano Martínez, David de Gea, Bernd Leno, and Nick Pope} all share 73\% save percentage.
+    \item The top 10 demonstrates that elite Premier League goalkeepers consistently save between 72\% and 91\% of shots on target.
+\end{itemize}
+\end{insightbox}
+
+% ========== القسم 3: Conclusion ==========
+\section{Conclusion \& Recommendations}
+
+\begin{tcolorbox}[colback=lightgray, colframe=primary, arc=5pt, boxrule=1.5pt]
+\centering
+\textcolor{primary}{\textbf{\Large Summary of Key Findings}}
+\end{tcolorbox}
+
+\vspace{0.5cm}
+
+\begin{tcolorbox}[colback=lightgray, colframe=secondary, arc=5pt, boxrule=1pt]
+The comprehensive analysis of goalkeeper performance reveals several critical insights that can inform team strategy, player recruitment, and goalkeeping development.
+\end{tcolorbox}
+
+\vspace{0.3cm}
+
+\begin{enumerate}
+    \item \textbf{Shot-Stopping Elite:} Sergio Romero leads with 91\% save percentage, while Joe Hart has the most saves (941) and clean sheets (127).
+    
+    \item \textbf{Aerial Dominance:} Joe Hart (640 aerial actions) and Lukasz Fabianski (480) dominate in punches and high claims.
+    
+    \item \textbf{Clean Sheet Efficiency:} Alisson (0.48 CS/match) and Ederson (0.45 CS/match) are the most reliable clean sheet keepers.
+    
+    \item \textbf{Sweeper-Keeper Role:} Hugo Lloris (257 sweeper clearances) leads modern goalkeepers in sweeping actions.
+    
+    \item \textbf{Resilience:} Sergio Romero makes approximately 9 saves per goal conceded, an extraordinary ratio.
+    
+    \item \textbf{Ederson vs Alisson:} Ederson excels at sweeper clearances and clean sheets; Alisson makes more saves per match.
+    
+    \item \textbf{Penalty Saving:} Many goalkeepers (including Alisson, Ederson, De Gea) have 100\% penalty save rates on penalties faced.
+    
+    \item \textbf{Handling Quality:} The catch vs punch analysis helps identify goalkeepers with secure vs aggressive handling styles.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\begin{tcolorbox}[colback=primary!10, colframe=primary, arc=5pt, boxrule=1.5pt]
+\textcolor{primary}{\textbf{Final Recommendations:}}
+\begin{itemize}
+    \item Target goalkeepers with save percentage above 70\% for consistent shot-stopping
+    \item Prioritize aerial dominance (high punches + high claims) for teams facing many crosses
+    \item Consider sweeper-clearance ability for teams playing high defensive lines
+    \item Use saves-per-goal ratio to identify undervalued shot-stoppers
+    \item Balance catching vs punching tendencies based on defensive system
+    \item Clean sheet efficiency is the most reliable predictor of defensive stability
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{0.5cm}
+
+\begin{center}
+\textcolor{primary}{\rule{0.7\textwidth}{0.5pt}}
+\end{center}
+
+\begin{center}
+\textcolor{darkgray}{\small saifeelkapanee@gmail.com \hspace{0.5cm} +20 1021440358}
+\end{center}
+
+\end{document}
