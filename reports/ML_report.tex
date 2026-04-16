@@ -1,0 +1,329 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{colortbl}
+\usepackage{tcolorbox}
+
+\geometry{margin=1in, top=1.2in, bottom=1in}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+
+\definecolor{primary}{RGB}{31, 78, 121}
+\definecolor{secondary}{RGB}{82, 143, 169}
+\definecolor{accent}{RGB}{220, 53, 69}
+\definecolor{success}{RGB}{40, 167, 69}
+\definecolor{warning}{RGB}{255, 193, 7}
+\definecolor{lightgray}{RGB}{248, 249, 250}
+\definecolor{darkgray}{RGB}{52, 58, 64}
+
+\titleformat{\section}
+{\color{primary}\Large\bfseries\sffamily}
+{\color{primary}\thesection}{1em}{}
+\titleformat{\subsection}
+{\color{secondary}\large\bfseries\sffamily}
+{\color{secondary}\thesubsection}{1em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{primary}{\textbf{Machine Learning Report}}}
+\fancyhead[R]{\textcolor{primary}{\today}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\color{primary}\hrule width\headwidth height\headrulewidth}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\captionsetup[table]{font={small,bf}, labelfont={color=primary,bf}, skip=6pt}
+\captionsetup[figure]{font={small,bf}, labelfont={color=primary,bf}, skip=6pt}
+
+\newtcolorbox{insightbox}{
+    colback=lightgray,
+    colframe=primary,
+    arc=5pt,
+    boxrule=1.5pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    title=\textbf{Key Insight}
+}
+
+\newtcolorbox{comparisonbox}{
+    colback=lightgray,
+    colframe=accent,
+    arc=5pt,
+    boxrule=1.5pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    title=\textbf{Model Comparison}
+}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+
+{\Huge\bfseries\sffamily\textcolor{primary}{Football Player Performance}}\\[0.3cm]
+{\Huge\bfseries\sffamily\textcolor{secondary}{Machine Learning  Report}}\\[1.5cm]
+
+{\large \textcolor{darkgray}{A Comprehensive Machine learning of Premier League Players}}\\[0.5cm]
+{\large \textcolor{darkgray}{Metrics \& Performance Indicators}}\\[2cm]
+
+\includegraphics[width=0.3\textwidth]{football_icon.png}\\[1.5cm] % اختياري: لو عندك ايكونة
+
+{\large \textbf{Prepared by:} Saife Elkapanee}\\[0.2cm]
+
+
+\vfill
+
+{\small \textcolor{darkgray}{Confidential - For Internal Use Only}}
+
+\end{titlepage}
+
+\setcounter{page}{1}
+
+\begin{center}
+\begin{minipage}{0.9\textwidth}
+\begin{tcolorbox}[colback=lightgray, colframe=primary, arc=8pt, boxrule=1pt]
+\centering
+\textcolor{primary}{\textbf{\Large Executive Summary}}\\[0.3cm]
+This report presents a comprehensive Machine Learning pipeline developed to classify Premier League players based on their statistical performance. The objective is to determine whether a player's statistical profile "deserves" a position in a "Top 6" club (Manchester City, Liverpool, Manchester United, Chelsea, Leicester City, and Tottenham Hotspur) using data up to 2020. Two algorithms---Logistic Regression (discriminative) and Linear Discriminant Analysis / GDA (generative)---are compared across four playing positions: Forwards, Midfielders, Defenders, and Goalkeepers.
+\end{tcolorbox}
+\end{minipage}
+\end{center}
+
+\vspace{0.5cm}
+\newpage
+
+\section{Methodology \& Pipeline Overview}
+
+\subsection{Initial Filtering}
+\begin{itemize}
+    \item \textbf{Appearance Filter:} Only players with at least 10 appearances (\texttt{Appearances >= 10}) are included.
+\end{itemize}
+
+\subsection{Data Cleaning \& Preprocessing}
+\begin{itemize}
+    \item \textbf{String to Numeric Conversion:} Percentage columns stripped of \% symbol.
+    \item \textbf{Imputation:} Missing values filled with 0.
+    \item \textbf{Integrity Check:} Rows with missing critical data dropped.
+\end{itemize}
+
+\subsection{Feature Engineering \& Clipping}
+\begin{itemize}
+    \item \texttt{Goals per match} capped at 1.2 for forwards.
+    \item \texttt{Shooting accuracy \%} capped at 80 for forwards.
+    \item \texttt{Passes per match} capped at 90 for midfielders.
+\end{itemize}
+
+\subsection{Position-Based Feature Selection}
+\begin{table}[H]
+\centering
+\caption{\textcolor{primary}{\textbf{Features Used by Position}}}
+\begin{tabular}{@{}>{\bfseries\color{primary}}p{3cm} p{11cm}@{}}
+\toprule
+\textbf{Position} & \textbf{Features} \\
+\midrule
+\rowcolor{lightgray} Forwards & Goals per match, Shooting accuracy \%, Assists, Passes per match, Big chances created \\
+Midfielders & Passes per match, Big chances created, Assists, Through balls, Interceptions, Recoveries, Tackles, Cross accuracy \% \\
+\rowcolor{lightgray} Defenders & Clean sheets, Tackles, Tackle success \%, Interceptions, Clearances, Aerial battles won \\
+Goalkeepers & Saves, Penalties saved, Clean sheets, Goals conceded, High Claims, Punches, Sweeper clearances, Goal Kicks \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Modeling Strategy}
+\begin{itemize}
+    \item \textbf{Logistic Regression:} \texttt{class\_weight='balanced'}
+    \item \textbf{GDA / LDA:} Priors set to [0.5, 0.5]
+\end{itemize}
+
+\newpage
+\section{Results Analysis by Position}
+
+\subsection{Forwards}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{Saves_Penalties saved.png}
+\caption{Decision Boundaries: Forwards}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Forward Model Performance}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Model} & \textbf{Test Accuracy} & \textbf{Confusion Matrix} \\
+\midrule
+Logistic Regression & 0.69 & [[29 13] [1 2]] \\
+GDA & 0.84 & [[38 4] [3 0]] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{insightbox}
+\textbf{Forwards Analysis:}
+\begin{itemize}
+    \item GDA outperforms Logistic Regression (84\% vs 69\% accuracy).
+    \item GDA shows excellent specificity (38 True Negatives, only 4 False Positives).
+\end{itemize}
+\end{insightbox}
+
+\subsection{Midfielders}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{Passes per match_Big chances created.png}
+\caption{Decision Boundaries: Midfielders}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Midfielder Model Performance}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Model} & \textbf{Test Accuracy} & \textbf{Confusion Matrix} \\
+\midrule
+Logistic Regression & 0.62 & [[40 26] [2 5]] \\
+GDA & 0.89 & [[63 3] [5 2]] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{insightbox}
+\textbf{Midfielders Analysis:}
+\begin{itemize}
+    \item GDA achieves excellent performance with 89\% accuracy.
+    \item Logistic Regression shows weaker performance (62\% accuracy).
+\end{itemize}
+\end{insightbox}
+
+\subsection{Defenders}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{clean sheets_Tackles.png}
+\caption{Decision Boundaries: Defenders}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Defender Model Performance}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Model} & \textbf{Test Accuracy} & \textbf{Confusion Matrix} \\
+\midrule
+Logistic Regression & 0.86 & [[50 5] [4 6]] \\
+GDA & 0.85 & [[54 1] [9 1]] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{insightbox}
+\textbf{Defenders Analysis:}
+\begin{itemize}
+    \item Both models perform strongly (86\% and 85\% accuracy).
+    \item Logistic Regression shows a slight edge in overall accuracy.
+\end{itemize}
+\end{insightbox}
+
+\subsection{Goalkeepers}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{Goals_per_match_Shooting_accuracy.png}
+\caption{Decision Boundaries: Goalkeepers}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Goalkeeper Model Performance}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Model} & \textbf{Test Accuracy} & \textbf{Confusion Matrix} \\
+\midrule
+Logistic Regression & 0.53 & [[7 7] [1 2]] \\
+GDA & 0.82 & [[12 2] [1 2]] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{insightbox}
+\textbf{Goalkeepers Analysis:}
+\begin{itemize}
+    \item GDA dramatically outperforms Logistic Regression (82\% vs 53\% accuracy).
+\end{itemize}
+\end{insightbox}
+
+\newpage
+\section{Individual Player Predictions}
+
+\begin{table}[H]
+\centering
+\caption{Player Prediction Results}
+\begin{tabular}{@{}>{\bfseries}lcc@{}}
+\toprule
+\textbf{Player} & \textbf{Logistic Regression} & \textbf{GDA} \\
+\midrule
+Mohamed Salah (Forward) & Deserves Top 6 (74.7\%) & Does NOT deserve \\
+Sergio Agüero (Forward) & Deserves Top 6 (87.7\%) & Deserves Top 6 \\
+Harry Kane (Forward) & Deserves Top 6 (71.7\%) & Does NOT deserve \\
+Kevin De Bruyne (Midfielder) & Does NOT deserve (47.7\%) & Does NOT deserve \\
+Virgil van Dijk (Defender) & Deserves Top 6 (79.1\%) & Deserves Top 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{insightbox}
+\textbf{Prediction Insights:}
+\begin{itemize}
+    \item Sergio Agüero: 87.7\% confidence - elite clinical finisher
+    \item Mohamed Salah: 74.7\% confidence - high-impact scoring profile
+    \item Kevin De Bruyne: 47.7\% confidence - "Quality-vs-Quantity" gap
+\end{itemize}
+\end{insightbox}
+\newpage
+\section{Conclusion \& Recommendations}
+
+\begin{tcolorbox}[colback=lightgray, colframe=primary, arc=5pt, boxrule=1.5pt]
+\centering
+\textcolor{primary}{\textbf{\Large Summary of Key Findings}}
+\end{tcolorbox}
+
+\begin{enumerate}
+    \item \textbf{Position Matters:} GDA excels for Forwards (84\%), Midfielders (89\%), Goalkeepers (82\%). Logistic Regression excels for Defenders (86\%).
+    \item \textbf{Feature Clipping is Essential:} Prevents outlier distortion.
+    \item \textbf{Class Balancing Improves Fairness:} Ensures minority class consideration.
+    \item \textbf{Elite Player Validation:} Agüero (87.7\%) and van Dijk (79.1\%) receive strong confidence.
+\end{enumerate}
+
+\begin{tcolorbox}[colback=primary!10, colframe=primary, arc=5pt, boxrule=1.5pt]
+\textcolor{primary}{\textbf{Final Recommendations:}}
+\begin{itemize}
+    \item you can change the accuracy of models by change \textbf{percentage of test set from {50\%} or choose more reliable players in this interval }
+    \item Use \textbf{you can change test size that change the accuracy }
+    \item Use \textbf{Logistic Regression for Defenders}
+    \item Apply \textbf{feature clipping and class balancing}
+    \item Consider \textbf{ensemble methods}
+\end{itemize}
+\end{tcolorbox}
+
+\begin{center}
+\textcolor{primary}{\rule{0.7\textwidth}{0.5pt}}
+\end{center}
+
+\begin{center}
+\textcolor{darkgray}{\texttt{saifeelkapanee@gmail.com} \hspace{0.5cm} +20 1021440358}
+\end{center}
+
+\end{document}
